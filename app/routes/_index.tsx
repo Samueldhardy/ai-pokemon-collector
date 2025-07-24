@@ -58,12 +58,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   try {
     // Try hybrid API first (Pokemon TCG + pricing)
+    console.log("Attempting hybrid API fetch for set:", setId);
     const chaseCards = await fetchHybridChaseCards(setId, 10);
-    console.log("Fetched hybrid chase cards:", chaseCards.length);
+    console.log("Hybrid API result:", chaseCards.length, "cards");
     
     if (chaseCards.length > 0) {
       return json({ chaseCards, selectedSet: setId, error: null });
     } else {
+      console.log("Hybrid API returned no cards, trying legacy fallback");
       // Fallback to legacy data if hybrid API returns no results
       const fallbackCards = fallbackChaseCards[setId] || [];
       return json({
@@ -73,13 +75,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
       });
     }
   } catch (error) {
-    console.error("Failed to fetch chase cards:", error);
-    // Use fallback data if both APIs fail
+    console.error("Hybrid API failed:", error);
+    // Use fallback data if hybrid API fails
     const fallbackCards = fallbackChaseCards[setId] || [];
     return json({
       chaseCards: fallbackCards,
       selectedSet: setId,
-      error: "Using sample data - API unavailable",
+      error: "Using sample data - API issue",
     });
   }
 }

@@ -44,7 +44,7 @@ export interface HybridCardPrice {
   hasRealPricing: boolean; // Track if we have real vs fallback pricing
 }
 
-// Pokemon TCG API set mappings to our UI
+// Pokemon TCG API set mappings to our UI (using correct Pokemon TCG API set IDs)
 const POKEMON_TCG_SET_MAPPINGS: Record<string, string> = {
   sv1: "sv1",     // Scarlet & Violet Base Set
   sv2: "sv2",     // Paldea Evolved  
@@ -56,9 +56,9 @@ const POKEMON_TCG_SET_MAPPINGS: Record<string, string> = {
   sv8: "sv8",     // Surging Sparks
   sv9: "sv9",     // Journey Together
   sv10: "sv10",   // Destined Rivals
-  "sv-prismatic": "sv8.5", // Prismatic Evolutions
-  "sv-black-bolt": "sv10.5", // Black Bolt (special subset)
-  "sv-white-flare": "sv10.5", // White Flare (special subset)
+  "sv-prismatic": "sv8pt5", // Prismatic Evolutions (correct format)
+  "sv-black-bolt": "sv10pt5", // Black Bolt (correct format)
+  "sv-white-flare": "sv10pt5", // White Flare (same as Black Bolt)
 };
 
 // Fallback pricing for popular chase cards (in GBP)
@@ -114,6 +114,7 @@ async function fetchPokemonTCGCards(setId: string, limit: number = 50): Promise<
   try {
     const mappedSetId = POKEMON_TCG_SET_MAPPINGS[setId];
     if (!mappedSetId) {
+      console.error(`Set ID ${setId} not found in mappings`);
       throw new Error(`Set ID ${setId} not supported`);
     }
 
@@ -126,10 +127,16 @@ async function fetchPokemonTCGCards(setId: string, limit: number = 50): Promise<
       orderBy: "number", // We'll sort by rarity afterwards
     });
 
-    console.log(`Pokemon TCG API returned ${cards.data.length} cards`);
+    console.log(`Pokemon TCG API returned ${cards.data?.length || 0} cards`);
+    
+    if (!cards.data || cards.data.length === 0) {
+      console.warn(`No cards found for set ${mappedSetId}. Set might not exist or be empty.`);
+    }
+    
     return cards.data || [];
   } catch (error) {
     console.error("Error fetching from Pokemon TCG API:", error);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
     return [];
   }
 }
