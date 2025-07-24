@@ -23,6 +23,7 @@ A modern web application for discovering the most valuable chase cards from Poke
 - **Framework**: Remix with TypeScript
 - **Styling**: Tailwind CSS with custom dark theme
 - **API**: Pokemon Price Tracker integration
+- **Deployment**: Vercel with automatic GitHub integration
 - **Features**: Server-side rendering, responsive design, accessibility support
 
 ## Built with AI Assistance
@@ -48,28 +49,24 @@ npm run dev
 
 ## Deployment
 
-First, build your app for production:
+This application is configured for **Vercel** deployment with automatic GitHub integration.
+
+### Vercel Deployment (Recommended)
+
+The app automatically deploys to Vercel when changes are pushed to the main branch:
+
+1. **Automatic Builds**: Connected to GitHub for continuous deployment
+2. **Environment Variables**: Configure `POKEMON_PRICE_TRACKER_API_KEY` in Vercel dashboard
+3. **Zero Configuration**: Vercel automatically detects Remix and handles the build process
+
+### Local Production Build
+
+To test the production build locally:
 
 ```sh
 npm run build
-```
-
-Then run the app in production mode:
-
-```sh
 npm start
 ```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
 
 ## Styling
 
