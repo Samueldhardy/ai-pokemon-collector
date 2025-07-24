@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Gengar body/head -->
+  <path d="M16 2 C8 2 2 8 2 16 C2 20 3 23 5 25 C5 27 6 28 8 28 L10 28 C10 29 11 30 12 30 L14 30 C14 29 15 28 16 28 C17 28 18 29 18 30 L20 30 C21 30 22 29 22 28 L24 28 C26 28 27 27 27 25 C29 23 30 20 30 16 C30 8 24 2 16 2 Z" fill="#5A5A8A" stroke="#2D2D5A" stroke-width="0.5"/>
+  
+  <!-- Gengar spikes on back -->
+  <path d="M12 4 L10 8 L14 6 Z" fill="#4A4A7A"/>
+  <path d="M16 3 L14 7 L18 5 Z" fill="#4A4A7A"/>
+  <path d="M20 4 L18 8 L22 6 Z" fill="#4A4A7A"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="11" cy="14" rx="3" ry="4" fill="#FF3333"/>
+  <ellipse cx="21" cy="14" rx="3" ry="4" fill="#FF3333"/>
+  <ellipse cx="11" cy="14" rx="1.5" ry="2" fill="#330000"/>
+  <ellipse cx="21" cy="14" rx="1.5" ry="2" fill="#330000"/>
+  <ellipse cx="11.5" cy="13" rx="0.5" ry="0.8" fill="#FF6666"/>
+  <ellipse cx="21.5" cy="13" rx="0.5" ry="0.8" fill="#FF6666"/>
+  
+  <!-- Mouth - big grin -->
+  <path d="M8 20 Q16 26 24 20 Q16 24 8 20 Z" fill="#000"/>
+  
+  <!-- Teeth -->
+  <polygon points="10,20 11,22 12,20" fill="#FFF"/>
+  <polygon points="13,20 14,22 15,20" fill="#FFF"/>
+  <polygon points="17,20 18,22 19,20" fill="#FFF"/>
+  <polygon points="20,20 21,22 22,20" fill="#FFF"/>
+  
+  <!-- Shadow effect -->
+  <ellipse cx="16" cy="29" rx="12" ry="2" fill="#000" opacity="0.2"/>
+</svg>
