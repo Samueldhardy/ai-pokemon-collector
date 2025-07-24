@@ -66,6 +66,29 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return json({ chaseCards, selectedSet: setId, error: null });
   } catch (error) {
     console.error("Failed to fetch chase cards:", error);
+    
+    // Log specific error details for debugging
+    if (error instanceof Error) {
+      console.error("Error details:", {
+        message: error.message,
+        name: error.name,
+        stack: error.stack?.split('\n').slice(0, 5).join('\n') // First 5 lines of stack
+      });
+      
+      // Check for specific API errors
+      if (error.message.includes('401')) {
+        console.warn("🚨 API Key Issue: 401 Unauthorized - likely hit daily limit of 200 calls or key expired");
+        console.warn("💡 TODO: Implement hybrid API approach to reduce dependency on Pokemon Price Tracker API");
+        console.warn("   - Use Pokemon TCG SDK for unlimited card data");
+        console.warn("   - Reserve pricing API for top chase cards only");
+        console.warn("   - Add curated fallback pricing for popular cards");
+      } else if (error.message.includes('429')) {
+        console.warn("🚨 Rate Limited: Too many requests - slow down API calls");
+      } else if (error.message.includes('403')) {
+        console.warn("🚨 Forbidden: API key may be invalid or restricted");
+      }
+    }
+    
     // Use fallback data if API fails
     const fallbackCards = fallbackChaseCards[setId] || [];
     return json({
