@@ -117,20 +117,20 @@ export default function Index() {
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900'>
       <header className='relative z-[100] border-b border-purple-500/20 bg-black/40 shadow-xl backdrop-blur-lg'>
-        <div className='mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8'>
-          <div className='flex items-center justify-between'>
-            <h1 className='bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-5xl font-black text-transparent'>
+        <div className='mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8'>
+          <div className='flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0'>
+            <h1 className='bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-center text-3xl font-black text-transparent sm:text-4xl lg:text-left lg:text-5xl'>
               ⚡ POKEMON TCG CHASE
             </h1>
 
             {/* Custom Dropdown in Header */}
-            <div className='relative ml-8 flex-1'>
+            <div className='relative w-full lg:ml-8 lg:flex-1'>
               {/* Dropdown Button */}
               <button
                 onClick={toggleDropdown}
-                className='flex w-full cursor-pointer items-center justify-between rounded-xl border-2 border-purple-500/50 bg-black/60 px-6 py-3 text-white shadow-2xl backdrop-blur-sm transition-all duration-300 hover:border-purple-400 focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-purple-500/25'
+                className='flex w-full cursor-pointer items-center justify-between rounded-xl border-2 border-purple-500/50 bg-black/60 px-4 py-3 text-white shadow-2xl backdrop-blur-sm transition-all duration-300 hover:border-purple-400 focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-purple-500/25 sm:px-6'
               >
-                <span className='text-sm font-medium'>
+                <span className='text-sm font-medium sm:text-base'>
                   {selectedSet
                     ? scarletVioletSets.find((s) => s.id === selectedSet)?.name
                     : "Choose a set..."}
@@ -168,7 +168,7 @@ export default function Index() {
                   {/* Dropdown Options */}
                   <div className='custom-scrollbar absolute left-0 right-0 top-full z-20 mt-2 max-h-80 overflow-y-auto rounded-xl border-2 border-purple-500/50 bg-black shadow-2xl'>
                     {!selectedSet && (
-                      <div className='cursor-default px-6 py-3 text-sm text-gray-400'>
+                      <div className='cursor-default px-4 py-3 text-sm text-gray-400 sm:px-6'>
                         Choose a set...
                       </div>
                     )}
@@ -176,7 +176,7 @@ export default function Index() {
                       <button
                         key={set.id}
                         onClick={() => handleSetChange(set.id)}
-                        className={`w-full px-6 py-3 text-left text-white transition-all duration-200 hover:bg-purple-500/20 hover:border-l-4 hover:border-l-purple-400 focus:outline-none focus:bg-purple-500/20 text-sm ${
+                        className={`w-full px-4 py-3 text-left text-white transition-all duration-200 hover:bg-purple-500/20 hover:border-l-4 hover:border-l-purple-400 focus:outline-none focus:bg-purple-500/20 text-sm sm:px-6 sm:text-base ${
                           selectedSet === set.id
                             ? "bg-purple-500/30 border-l-4 border-l-purple-400"
                             : ""
@@ -234,7 +234,7 @@ export default function Index() {
             <h3 className='mb-8 text-center text-xl font-bold text-purple-300'>
               {scarletVioletSets.find((s) => s.id === selectedSet)?.name}
             </h3>
-            <div className='grid grid-cols-1 gap-8 gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'>
+            <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5'>
               {(chaseCards as DisplayCard[]).map((card: DisplayCard) => {
                 // Type guards to check which type of card we have
                 const isApiCard = (card: DisplayCard): card is CardPrice =>
@@ -301,7 +301,7 @@ export default function Index() {
                     role='button'
                     tabIndex={0}
                     aria-label={`View details for ${getName()}`}
-                    className='group relative mx-auto w-[260px] transform-gpu cursor-pointer overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-br from-gray-900/90 to-black/90 shadow-2xl backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-purple-400/60 hover:shadow-2xl hover:shadow-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-400'
+                    className='group relative mx-auto w-full max-w-[280px] transform-gpu cursor-pointer overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-br from-gray-900/90 to-black/90 shadow-2xl backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-purple-400/60 hover:shadow-2xl hover:shadow-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-400'
                   >
                     {/* Card Image */}
                     <div className='relative w-full flex justify-center'>
@@ -367,22 +367,22 @@ export default function Index() {
             aria-label='Close modal'
           />
           <div
-            className='relative mx-4 w-full max-w-4xl rounded-3xl border border-purple-500/50 bg-gradient-to-br from-gray-900/95 to-black/95 shadow-2xl backdrop-blur-lg'
+            className='relative mx-2 w-full max-w-4xl rounded-3xl border border-purple-500/50 bg-gradient-to-br from-gray-900/95 to-black/95 shadow-2xl backdrop-blur-lg sm:mx-4'
             role='document'
           >
             {/* Close Button */}
             <button
               onClick={closeModal}
-              className='absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-red-500/80 text-xl font-bold text-white transition-all duration-300 hover:bg-red-500'
+              className='absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-red-500/80 text-lg font-bold text-white transition-all duration-300 hover:bg-red-500 sm:right-4 sm:top-4 sm:h-10 sm:w-10 sm:text-xl'
             >
               ×
             </button>
 
-            <div className='grid grid-cols-1 gap-8 p-8 lg:grid-cols-2'>
+            <div className='grid grid-cols-1 gap-4 p-4 sm:gap-8 sm:p-8 lg:grid-cols-2'>
               {/* Card Image */}
               <div className='flex flex-col items-center'>
                 <div className='relative'>
-                  <div className='absolute -left-2 -top-2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-lg font-black text-black shadow-lg'>
+                  <div className='absolute -left-1 -top-1 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-sm font-black text-black shadow-lg sm:-left-2 sm:-top-2 sm:h-12 sm:w-12 sm:text-lg'>
                     #
                     {(() => {
                       const isApiCard = (
@@ -417,17 +417,17 @@ export default function Index() {
                       return "";
                     })()}
                     alt={selectedCard.name}
-                    className='w-full max-w-sm rounded-2xl shadow-2xl'
+                    className='w-full max-w-xs rounded-2xl shadow-2xl sm:max-w-sm'
                   />
                 </div>
               </div>
 
               {/* Card Details */}
-              <div className='flex flex-col justify-center space-y-6'>
+              <div className='flex flex-col justify-center space-y-4 sm:space-y-6'>
                 <div>
                   <h2
                     id='card-modal-title'
-                    className='mb-2 text-3xl font-black text-white'
+                    className='mb-2 text-xl font-black text-white sm:text-2xl lg:text-3xl'
                   >
                     {selectedCard.name}
                   </h2>
@@ -446,8 +446,8 @@ export default function Index() {
                 </div>
 
                 {/* Pricing Information */}
-                <div className='space-y-4'>
-                  <h3 className='mb-3 text-xl font-bold text-yellow-400'>
+                <div className='space-y-3 sm:space-y-4'>
+                  <h3 className='mb-2 text-lg font-bold text-yellow-400 sm:mb-3 sm:text-xl'>
                     💰 Pricing Information
                   </h3>
 
