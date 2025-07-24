@@ -120,12 +120,19 @@ async function fetchPokemonTCGCards(setId: string, limit: number = 50): Promise<
 
     console.log(`Fetching cards from Pokemon TCG API for set: ${mappedSetId}`);
     
+    // Add timeout to prevent hanging
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Pokemon TCG API timeout')), 10000)
+    );
+    
     // Fetch cards from the set, prioritizing high-rarity cards
-    const cards = await pokemon.card.where({
+    const cardsPromise = pokemon.card.where({
       q: `set.id:${mappedSetId}`,
       pageSize: limit,
       orderBy: "number", // We'll sort by rarity afterwards
     });
+
+    const cards = await Promise.race([cardsPromise, timeoutPromise]);
 
     console.log(`Pokemon TCG API returned ${cards.data?.length || 0} cards`);
     
@@ -137,6 +144,8 @@ async function fetchPokemonTCGCards(setId: string, limit: number = 50): Promise<
   } catch (error) {
     console.error("Error fetching from Pokemon TCG API:", error);
     console.error("Error details:", error instanceof Error ? error.message : String(error));
+    
+    // If Pokemon TCG API fails, return empty array to trigger fallback
     return [];
   }
 }

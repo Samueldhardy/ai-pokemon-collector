@@ -3,13 +3,15 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useState, useEffect } from "react";
 import {
-  fetchHybridChaseCards,
-  type HybridCardPrice,
-} from "~/utils/hybrid-pokemon-api";
-import {
+  fetchTopChaseCards,
   fallbackChaseCards,
   type CardPrice,
 } from "~/utils/pokemon-api";
+// Temporarily disabled hybrid API while debugging
+// import {
+//   fetchHybridChaseCards,
+//   type HybridCardPrice,
+// } from "~/utils/hybrid-pokemon-api";
 
 // Type for fallback cards
 type FallbackCard = {
@@ -19,8 +21,8 @@ type FallbackCard = {
   price: number;
 };
 
-// Union type for cards that can come from hybrid API, legacy API, or fallback
-type DisplayCard = HybridCardPrice | CardPrice | FallbackCard;
+// Union type for cards that can come from legacy API or fallback
+type DisplayCard = CardPrice | FallbackCard;
 
 export const meta: MetaFunction = () => {
   return [
@@ -57,31 +59,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   try {
-    // Try hybrid API first (Pokemon TCG + pricing)
-    console.log("Attempting hybrid API fetch for set:", setId);
-    const chaseCards = await fetchHybridChaseCards(setId, 10);
-    console.log("Hybrid API result:", chaseCards.length, "cards");
-    
-    if (chaseCards.length > 0) {
-      return json({ chaseCards, selectedSet: setId, error: null });
-    } else {
-      console.log("Hybrid API returned no cards, trying legacy fallback");
-      // Fallback to legacy data if hybrid API returns no results
-      const fallbackCards = fallbackChaseCards[setId] || [];
-      return json({
-        chaseCards: fallbackCards,
-        selectedSet: setId,
-        error: fallbackCards.length > 0 ? "Using sample data - limited API data available" : null,
-      });
-    }
+    // Use legacy API while debugging hybrid implementation
+    console.log("Using legacy API for set:", setId);
+    const chaseCards = await fetchTopChaseCards(setId, 10);
+    console.log("Fetched chase cards:", chaseCards.length);
+    return json({ chaseCards, selectedSet: setId, error: null });
   } catch (error) {
-    console.error("Hybrid API failed:", error);
-    // Use fallback data if hybrid API fails
+    console.error("Failed to fetch chase cards:", error);
+    // Use fallback data if API fails
     const fallbackCards = fallbackChaseCards[setId] || [];
     return json({
       chaseCards: fallbackCards,
       selectedSet: setId,
-      error: "Using sample data - API issue",
+      error: "Using sample data - API unavailable",
     });
   }
 }
@@ -254,17 +244,14 @@ export default function Index() {
             <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5'>
               {(chaseCards as DisplayCard[]).map((card: DisplayCard) => {
                 // Type guards to check which type of card we have
-                const isHybridCard = (card: DisplayCard): card is HybridCardPrice =>
-                  "id" in card && "hasRealPricing" in card;
                 const isApiCard = (card: DisplayCard): card is CardPrice =>
-                  "id" in card && !("hasRealPricing" in card);
+                  "id" in card;
                 const isFallbackCard = (
                   card: DisplayCard,
                 ): card is FallbackCard => "image" in card;
 
                 // Helper functions that work with both card types
                 const getRank = (): number => {
-                  if (isHybridCard(card)) return card.rank || 0;
                   if (isApiCard(card)) return card.rank || 0;
                   if (isFallbackCard(card)) return card.rank;
                   return 0;
@@ -276,7 +263,6 @@ export default function Index() {
 
                 const getImageUrl = (): string => {
                   if (isFallbackCard(card)) return card.image;
-                  if (isHybridCard(card)) return card.imageUrl;
                   if (isApiCard(card)) {
                     return (
                       card.imageUrl ||
@@ -288,11 +274,6 @@ export default function Index() {
 
                 const getPrice = (): number => {
                   if (isFallbackCard(card)) return card.price;
-                  if (isHybridCard(card)) {
-                    const tcgPrice = card.prices?.tcgplayer?.market || 0;
-                    const fallbackPrice = card.prices?.fallback?.market || 0;
-                    return Math.max(tcgPrice, fallbackPrice);
-                  }
                   if (isApiCard(card)) {
                     const tcgPrice = card.prices?.tcgplayer?.market || 0;
                     const ebayPrice = card.prices?.ebay?.market || 0;
@@ -304,13 +285,11 @@ export default function Index() {
                 };
 
                 const getRarity = (): string | undefined => {
-                  if (isHybridCard(card)) return card.rarity;
                   if (isApiCard(card)) return card.rarity;
                   return undefined;
                 };
 
                 const getKey = (): string => {
-                  if (isHybridCard(card)) return card.id;
                   if (isApiCard(card)) return card.id;
                   if (isFallbackCard(card)) return `fallback-${card.rank}`;
                   return Math.random().toString();
@@ -460,11 +439,9 @@ export default function Index() {
                     {selectedCard.name}
                   </h2>
                   {(() => {
-                    const isHybridCard = (card: DisplayCard): card is HybridCardPrice =>
-                      "id" in card && "hasRealPricing" in card;
                     const isApiCard = (card: DisplayCard): card is CardPrice =>
-                      "id" in card && !("hasRealPricing" in card);
-                    if ((isHybridCard(selectedCard) || isApiCard(selectedCard)) && selectedCard.rarity) {
+                      "id" in card;
+                    if (isApiCard(selectedCard) && selectedCard.rarity) {
                       return (
                         <p className='text-lg font-semibold uppercase tracking-wider text-purple-300'>
                           {selectedCard.rarity}
@@ -482,10 +459,8 @@ export default function Index() {
                   </h3>
 
                   {(() => {
-                    const isHybridCard = (card: DisplayCard): card is HybridCardPrice =>
-                      "id" in card && "hasRealPricing" in card;
                     const isApiCard = (card: DisplayCard): card is CardPrice =>
-                      "id" in card && !("hasRealPricing" in card);
+                      "id" in card;
                     const isFallbackCard = (
                       card: DisplayCard,
                     ): card is FallbackCard => "image" in card;
@@ -503,63 +478,6 @@ export default function Index() {
                       );
                     }
 
-                    if (isHybridCard(selectedCard)) {
-                      return (
-                        <div className='space-y-3'>
-                          {/* Show pricing source indicator */}
-                          <div className='rounded-xl border border-purple-500/30 bg-purple-500/10 p-3'>
-                            <div className='flex items-center justify-between'>
-                              <span className='text-sm text-gray-300'>Data Source:</span>
-                              <span className='text-sm font-bold text-purple-300'>
-                                {selectedCard.hasRealPricing ? '🔴 Live API Data' : '📊 Curated Pricing'}
-                              </span>
-                            </div>
-                          </div>
-
-                          {selectedCard.prices?.tcgplayer && (
-                            <div className='rounded-xl border border-blue-500/30 bg-blue-500/20 p-4'>
-                              <h4 className='mb-2 font-bold text-blue-300'>
-                                🇺🇸 TCGPlayer
-                              </h4>
-                              <div className='grid grid-cols-3 gap-2 text-sm'>
-                                <div className='text-center'>
-                                  <p className='text-gray-300'>Low</p>
-                                  <p className='font-bold text-red-400'>
-                                    £{selectedCard.prices.tcgplayer.low}
-                                  </p>
-                                </div>
-                                <div className='text-center'>
-                                  <p className='text-gray-300'>Market</p>
-                                  <p className='font-bold text-green-400'>
-                                    £{selectedCard.prices.tcgplayer.market}
-                                  </p>
-                                </div>
-                                <div className='text-center'>
-                                  <p className='text-gray-300'>High</p>
-                                  <p className='font-bold text-blue-400'>
-                                    £{selectedCard.prices.tcgplayer.high}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {selectedCard.prices?.fallback && (
-                            <div className='rounded-xl border border-green-500/30 bg-green-500/20 p-4'>
-                              <h4 className='mb-2 font-bold text-green-300'>
-                                📊 {selectedCard.prices.fallback.source}
-                              </h4>
-                              <div className='text-center'>
-                                <p className='text-gray-300'>Market Price</p>
-                                <p className='text-lg font-bold text-green-400'>
-                                  £{selectedCard.prices.fallback.market}
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    }
 
                     if (isApiCard(selectedCard)) {
                       return (
@@ -643,11 +561,9 @@ export default function Index() {
 
                 {/* Card Info */}
                 {(() => {
-                  const isHybridCard = (card: DisplayCard): card is HybridCardPrice =>
-                    "id" in card && "hasRealPricing" in card;
                   const isApiCard = (card: DisplayCard): card is CardPrice =>
-                    "id" in card && !("hasRealPricing" in card);
-                  if (isHybridCard(selectedCard) || isApiCard(selectedCard)) {
+                    "id" in card;
+                  if (isApiCard(selectedCard)) {
                     return (
                       <div className='space-y-3'>
                         <h3 className='text-xl font-bold text-yellow-400'>
