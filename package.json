@@ -17,6 +17,7 @@
     "@remix-run/serve": "^2.16.8",
     "@remix-run/vercel": "^1.19.3",
     "isbot": "^4.1.0",
+    "pokemontcgsdk": "^2.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
